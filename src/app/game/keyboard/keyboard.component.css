@@ -1,0 +1,44 @@
+.simple-keyboard {
+  /* max-width: 850px; */
+  background-color: transparent;
+}
+
+.simple-keyboard.hg-layout-default .hg-row {
+  justify-content: center;
+}
+
+.simple-keyboard.hg-layout-default .hg-button.hg-standardBtn {
+  font-size: 1.5rem;
+  max-width: 3rem;
+}
+
+.simple-keyboard.hg-layout-default .hg-button.hg-functionBtn {
+  max-width: 5rem;
+}
+
+.simple-keyboard.hg-layout-default .hg-button-enter {
+  font-size: 1rem;
+}
+
+.simple-keyboard.hg-layout-default .hg-button-bksp {
+  font-size: 1.2rem;
+}
+
+.simple-keyboard.hg-layout-default .hg-button {
+  background: rgb(255, 0, 0, 0.7);
+  color: white;
+  padding: 1.5rem;
+  font-weight: bold;
+}
+
+.simple-keyboard.hg-layout-default .incorrect-btn {
+  background-color: #3A3A3C;
+}
+
+.simple-keyboard.hg-layout-default .present-btn {
+  background-color: yellow;
+}
+
+.simple-keyboard.hg-layout-default .correct-btn {
+  background-color: green;
+}

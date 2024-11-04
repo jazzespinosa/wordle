@@ -1,0 +1,28 @@
+h3 {
+  margin: 0px;
+  font-size: 2.5em;
+  font-weight: bolder;
+}
+
+div {
+  width: 3.5em;
+  height: 4.5em;
+  align-content: center;
+  padding: 0.5rem;
+  background-color: skyblue;
+}
+
+.incorrect {
+  background-color: #3A3A3C;
+  color: white;
+}
+
+.present {
+  background-color: rgb(221, 221, 93);
+  color: white;
+}
+
+.correct {
+  background-color: rgb(105, 158, 26);
+  color: white;
+}

@@ -1,0 +1,9 @@
+.header {
+  background-color: red;
+  color: blue;
+  height: 4em;
+}
+
+.navbar-toggler {
+  box-shadow: none;
+}

@@ -1,0 +1,16 @@
+.mat-sidenav {
+  height: calc(100vh - 4em);
+  width: 15em;
+  float: left;
+  /* position: relative; */
+  padding: 1em;
+  background-color: #d7e3ff;
+}
+
+.mat-sidenav-content {
+  overflow-x: hidden;
+}
+
+.mat-sidenav-container {
+  height: calc(100vh - 4em);
+}
