@@ -9,14 +9,19 @@ import { RouterLink } from '@angular/router';
   styleUrl: './header.component.css',
 })
 export class HeaderComponent {
-  @Output() sideNavClicked = new EventEmitter<void>();
+  @Output() sideNavMenuClicked = new EventEmitter<void>();
+  @Output() headerClicked = new EventEmitter<void>();
 
   isSideNavOpen = false;
 
   constructor() {}
 
-  onSideNavClick() {
+  onSideNavMenuClick() {
     this.isSideNavOpen = !this.isSideNavOpen;
-    this.sideNavClicked.emit();
+    this.sideNavMenuClicked.emit();
+  }
+
+  onHeaderClick() {
+    this.headerClicked.emit();
   }
 }

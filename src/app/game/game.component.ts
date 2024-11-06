@@ -1,10 +1,13 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { MatGridListModule } from '@angular/material/grid-list';
+import { BehaviorSubject, Observable, Subscription, take, tap } from 'rxjs';
+import { ActivatedRoute, Router } from '@angular/router';
 
-import { LetterContainerComponent } from './letter-container/letter-container.component';
 import { KeyboardComponent } from './keyboard/keyboard.component';
 import { GameService } from './game.service';
-import { TurnModel } from './game.model';
+import { GameConfig, type TurnModel } from './game.model';
+import { LetterContainerComponent } from './letter-container/letter-container.component';
+import { ModalComponent } from './modal/modal.component';
 import { CommonModule } from '@angular/common';
 
 @Component({
@@ -14,37 +17,68 @@ import { CommonModule } from '@angular/common';
     MatGridListModule,
     LetterContainerComponent,
     KeyboardComponent,
+    ModalComponent,
     CommonModule,
   ],
   templateUrl: './game.component.html',
   styleUrl: './game.component.css',
 })
-export class GameComponent implements OnInit {
-  wordLength!: number;
-  maxTurns!: number;
-  gameStateValues!: TurnModel[];
+export class GameComponent implements OnInit, OnDestroy {
+  // wordLength!: number;
+  // maxTurns!: number;
 
-  constructor(private gameService: GameService) {}
+  isModalOpen!: BehaviorSubject<boolean>;
+  gameStateValues!: TurnModel[];
+  gameConfig!: BehaviorSubject<GameConfig>;
+  // wordLength!: Observable<GameConfig>;
+  // maxTurns!: Observable<GameConfig>;
+
+  private subsGameStateValues!: Subscription;
+
+  constructor(
+    private gameService: GameService,
+    private route: ActivatedRoute,
+    private router: Router
+  ) {}
 
   ngOnInit(): void {
-    this.wordLength = this.gameService.getWordLength();
-    this.maxTurns = this.gameService.getMaxTurns();
+    // this.subsGameConfig = this.gameService.gameConfig.subscribe((values) => {
+    //   this.wordLength = +values.wordLength;
+    //   this.maxTurns = +values.maxTurns;
+    //   console.log(values);
+    // });
+    this.subsGameStateValues = this.gameService.gameStateValues.subscribe(
+      (values) => {
+        this.gameStateValues = values;
+      }
+    );
 
-    this.gameService.gameStateValues.subscribe((values) => {
-      this.gameStateValues = values;
-    });
+    this.isModalOpen = this.gameService.isGameModalOpen;
+    this.gameConfig = this.gameService.gameConfig;
 
-    const turn = this.gameStateValues.length;
-    this.gameService.currentTurn.next(turn);
+    // this.wordLength = this.gameService.gameConfig.pipe(
+    //   tap((value) => {
+    //     return value.wordLength;
+    //   })
+    // );
+    // this.maxTurns = this.gameService.gameConfig.pipe(
+    //   tap((value) => {
+    //     return value.maxTurns;
+    //   })
+    // );
   }
 
-  isModalOpen = true;
-  openModal() {
-    this.isModalOpen = true;
+  ngOnDestroy(): void {
+    this.subsGameStateValues.unsubscribe();
+    // this.subsGameConfig.unsubscribe();
   }
 
-  closeModal() {
-    this.isModalOpen = false;
-    console.log('close modal triggered');
+  onCloseModal() {
+    this.gameService.isGameModalOpen.next(false);
+  }
+
+  onNewGameStartModal() {
+    this.gameService.isGameModalOpen.next(false);
+    this.gameService.gameStateValues.next([]);
   }
 }

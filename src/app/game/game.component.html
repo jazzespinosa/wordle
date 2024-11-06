@@ -1,74 +1,21 @@
-<div *ngIf="isModalOpen">
-  <div class="modal-backdrop"></div>
-  <div
-    class="modal fade show"
-    tabindex="-1"
-    role="dialog"
-    style="display: block"
-  >
-    <div class="modal-dialog" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title">NEW GAME</h5>
-        </div>
-        <div class="modal-body">
-          <div class="row">
-            <div class="col-md-auto">
-              <div class="input-group mb-3">
-                <label class="input-group-text" for="inputGroupSelect01"
-                  >WORD LENGTH</label
-                >
-                <select class="form-select" id="inputGroupSelect01">
-                  <option selected>5</option>
-                  <option value="4">4</option>
-                  <option value="5">5</option>
-                  <option value="6">6</option>
-                  <option value="7">7</option>
-                </select>
-              </div>
-            </div>
-          </div>
-          <div class="row">
-            <div class="col-md-auto">
-              <div class="input-group mb-3">
-                <label class="input-group-text" for="inputGroupSelect01"
-                  >TRIES</label
-                >
-                <select class="form-select" id="inputGroupSelect01">
-                  <option selected>6</option>
-                  <option value="4">4</option>
-                  <option value="5">5</option>
-                  <option value="6">6</option>
-                  <option value="7">7</option>
-                </select>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="modal-footer">
-          <button
-            type="button"
-            class="btn btn-secondary"
-            (click)="closeModal()"
-          >
-            Close
-          </button>
-        </div>
-      </div>
-    </div>
-  </div>
+@if (isModalOpen | async) {
+<div>
+  <app-modal
+    (newGameStartModal)="onNewGameStartModal()"
+    (resumeModal)="onCloseModal()"
+  ></app-modal>
 </div>
-
+}
 <div>
   <div class="row justify-content-center main-container no-gutters">
     <div class="col-md-auto">
-      @for (item of [].constructor(maxTurns); track $index; let turnIndex =
-      $index) {
+      @for (item of [].constructor((gameConfig | async)!.maxTurns); track
+      $index; let turnIndex = $index) {
       <div
         class="row row-container justify-content-center no-gutters flex-nowrap"
       >
-        @for (item of [].constructor(wordLength); track $index; let letterIndex
-        = $index) {
+        @for (item of [].constructor((gameConfig | async)!.wordLength); track
+        $index; let letterIndex = $index) {
         <div class="col-auto cell-container">
           <app-letter-container
             [turnIndex]="turnIndex"

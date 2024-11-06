@@ -1,9 +1,9 @@
 .mat-sidenav {
-  height: calc(100vh - 4em);
-  width: 15em;
+  height: calc(100vh - 4rem);
+  width: 15rem;
   float: left;
   /* position: relative; */
-  padding: 1em;
+  padding: 1rem;
   background-color: #d7e3ff;
 }
 
@@ -12,5 +12,5 @@
 }
 
 .mat-sidenav-container {
-  height: calc(100vh - 4em);
+  height: calc(100vh - 4rem);
 }

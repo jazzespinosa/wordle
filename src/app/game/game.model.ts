@@ -1,13 +1,13 @@
-export interface TempTurnModel {
-  turn: number;
-  turnValue: string;
-}
-
 export enum LetterState {
   correct = 'correct',
   present = 'present',
   incorrect = 'incorrect',
   default = 'default',
+}
+
+export interface GameConfig {
+  wordLength: number;
+  maxTurns: number;
 }
 
 export interface CellModel {

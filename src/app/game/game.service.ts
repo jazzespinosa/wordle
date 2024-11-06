@@ -1,40 +1,41 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, map, of, Subject, take, tap } from 'rxjs';
-import { CellModel, LetterState, TempTurnModel, TurnModel } from './game.model';
+import { BehaviorSubject } from 'rxjs';
+import {
+  type CellModel,
+  GameConfig,
+  LetterState,
+  type TurnModel,
+} from './game.model';
 
 @Injectable({ providedIn: 'root' })
 export class GameService {
+  private readonly INITIAL_WORD_LENGTH = 5;
+  private readonly INITIAL_MAX_TURNS = 6;
   answer = 'WORDS';
 
-  currentTurn = new BehaviorSubject<number>(0);
-
-  tempTurnValue = new BehaviorSubject<TempTurnModel>({
-    turn: 0,
-    turnValue: '',
+  isGameModalOpen = new BehaviorSubject<boolean>(false);
+  tempTurnValue = new BehaviorSubject<string>('');
+  gameConfig = new BehaviorSubject<GameConfig>({
+    wordLength: this.INITIAL_WORD_LENGTH,
+    maxTurns: this.INITIAL_MAX_TURNS,
   });
-
   gameStateValues = new BehaviorSubject<TurnModel[]>([]);
 
-  private readonly wordLength = 5;
-  private readonly maxTurns = 6;
+  // private wordLength = this.INITIAL_WORD_LENGTH;
+  // private maxTurns = this.INITIAL_MAX_TURNS;
 
   onChangeTurnValue(newValue: string) {
-    if (newValue.length <= this.wordLength) {
-      this.tempTurnValue.next({
-        turn: this.currentTurn.value,
-        turnValue: newValue,
-      });
-      this.tempTurnValue.pipe(take(1)).subscribe((value) => {
-        console.log('turnvalue', value);
-      });
+    if (newValue.length <= this.gameConfig.value.wordLength) {
+      this.tempTurnValue.next(newValue);
+      // this.tempTurnValue.pipe(take(1)).subscribe((value) => {
+      //   console.log('turnvalue', value);
+      // });
     }
   }
 
   onEnterValue(enteredValue: string) {
     // check if valid from API?
     if (this.checkIfValid()) {
-      // this.allTurnValues.next([...this.allTurnValues.value, enteredValue]);
-
       let cellValues: CellModel[] = [];
       for (let i = 0; i < enteredValue.length; i++) {
         // check state of letter
@@ -53,8 +54,6 @@ export class GameService {
         }
 
         cellValues.push({
-          // turnIndex: this.currentTurn.value,
-          // letterIndex: i,
           state: state,
           value: enteredValue[i],
         });
@@ -63,15 +62,14 @@ export class GameService {
       this.gameStateValues.next([
         ...this.gameStateValues.value,
         {
-          // turnIndex: this.currentTurn.value,
           turnValue: enteredValue,
           cellValue: cellValues,
         },
       ]);
 
-      console.log(this.gameStateValues);
+      this.tempTurnValue.next('');
 
-      this.currentTurn.next(this.currentTurn.value + 1);
+      console.log(this.gameStateValues);
     }
   }
 
@@ -80,15 +78,19 @@ export class GameService {
     return true;
   }
 
-  getWordLength() {
-    return this.wordLength;
-  }
+  // getWordLength() {
+  //   return this.gameConfig.value.wordLength;
+  // }
 
-  getMaxTurns() {
-    return this.maxTurns;
-  }
+  // setWordLength(length: number) {
+  //   this.wordLength = length;
+  // }
 
-  getCurrentTurn() {
-    return this.currentTurn.value;
-  }
+  // getMaxTurns() {
+  //   return this.maxTurns;
+  // }
+
+  // setMaxTurn(turns: number) {
+  //   this.maxTurns = turns;
+  // }
 }

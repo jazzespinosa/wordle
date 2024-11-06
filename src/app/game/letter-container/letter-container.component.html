@@ -1,8 +1,7 @@
 <app-card>
   <div [class]="cellStateClass">
-    @if (tempTurnValue.turnValue[letterIndex] && tempTurnValue.turn ===
-    turnIndex) {
-    <h3>{{ tempTurnValue.turnValue[letterIndex] }}</h3>
+    @if (currentTurnValue[letterIndex] && currentTurn === turnIndex) {
+    <h3>{{ currentTurnValue[letterIndex] }}</h3>
     } @else if (TurnValue) {
     <h3>{{ TurnValue.turnValue[letterIndex] }}</h3>
     } @else {

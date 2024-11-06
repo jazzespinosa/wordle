@@ -1,12 +1,15 @@
-<app-header (sideNavClicked)="onSideNavClicked()"></app-header>
-<mat-sidenav-container (backdropClick)="closeSideNav()">
+<app-header
+  (sideNavMenuClicked)="onSideNavClicked()"
+  (headerClicked)="closeSideNav()"
+></app-header>
+<mat-sidenav-container hasBackdrop (backdropClick)="closeSideNav()">
   <mat-sidenav
     #sidenav
     mode="side"
     (keydown.escape)="closeSideNav()"
     [opened]="isSideNavOpen"
   >
-    <app-side-nav></app-side-nav>
+    <app-side-nav (closeSideNav)="closeSideNav()"></app-side-nav>
   </mat-sidenav>
   <mat-sidenav-content>
     <router-outlet></router-outlet>

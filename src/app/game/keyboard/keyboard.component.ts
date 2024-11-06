@@ -10,6 +10,7 @@ import {
 } from '@angular/core';
 import Keyboard from 'simple-keyboard';
 import { GameService } from '../game.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-keyboard',
@@ -24,6 +25,7 @@ export class KeyboardComponent implements AfterViewInit, OnInit, OnDestroy {
   value = '';
   keyboard!: Keyboard;
   private keyDownListener!: (event: KeyboardEvent) => void;
+  private subsGameConfig!: Subscription;
 
   constructor(
     @Inject(PLATFORM_ID) private platformId: Object, // checks the current platform the app is running (browser, server, or mobile env)
@@ -57,13 +59,17 @@ export class KeyboardComponent implements AfterViewInit, OnInit, OnDestroy {
       window.addEventListener('keydown', this.keyDownListener);
     }
 
-    this.wordLength = this.gameService.getWordLength();
+    this.subsGameConfig = this.gameService.gameConfig.subscribe((value) => {
+      this.wordLength = value.wordLength;
+    });
   }
 
   ngOnDestroy(): void {
     if (isPlatformBrowser(this.platformId) && this.keyDownListener) {
       window.removeEventListener('keydown', this.keyDownListener);
     }
+
+    this.subsGameConfig.unsubscribe();
   }
 
   onKeyPress(key: string) {

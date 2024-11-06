@@ -1,12 +1,12 @@
 h3 {
   margin: 0px;
-  font-size: 2.5em;
+  font-size: 2.5rem;
   font-weight: bolder;
 }
 
 div {
-  width: 3.5em;
-  height: 4.5em;
+  width: 3.5rem;
+  height: 4.5rem;
   align-content: center;
   padding: 0.5rem;
   background-color: skyblue;
@@ -25,4 +25,9 @@ div {
 .correct {
   background-color: rgb(105, 158, 26);
   color: white;
+}
+
+.default {
+  background-color: skyblue;
+  color: black;
 }
