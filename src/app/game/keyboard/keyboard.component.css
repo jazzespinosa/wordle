@@ -27,18 +27,19 @@
 .simple-keyboard.hg-layout-default .hg-button {
   background: rgb(255, 0, 0, 0.7);
   color: white;
-  padding: 1.5rem;
+  padding-top: 1.5rem;
+  padding-bottom: 1.5rem;
   font-weight: bold;
 }
 
-.simple-keyboard.hg-layout-default .incorrect-btn {
+.simple-keyboard.hg-layout-default .incorrect {
   background-color: #3A3A3C;
 }
 
-.simple-keyboard.hg-layout-default .present-btn {
-  background-color: yellow;
+.simple-keyboard.hg-layout-default .present {
+  background-color: rgb(221, 221, 93);
 }
 
-.simple-keyboard.hg-layout-default .correct-btn {
-  background-color: green;
+.simple-keyboard.hg-layout-default .correct {
+  background-color: rgb(105, 158, 26);
 }

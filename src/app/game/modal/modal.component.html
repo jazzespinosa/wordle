@@ -10,8 +10,8 @@
           <div class="">
             <button
               type="button"
-              class="btn btn-primary mb-3"
-              [disabled]="isNewGame"
+              class="btn btn-primary"
+              [disabled]="isLoading"
               (click)="onResumeModal()"
             >
               RESUME
@@ -20,71 +20,86 @@
           <div>
             <button
               type="button"
-              class="btn btn-primary mb-3"
-              (click)="onNewGameClicked()"
+              class="btn btn-primary mt-3"
+              [disabled]="isLoading"
+              data-bs-toggle="collapse"
+              href="#collapseNewGame"
+              aria-expanded="false"
+              aria-controls="collapseNewGame"
             >
               NEW GAME
             </button>
           </div>
         </div>
-        @if (isNewGame) {
-        <div class="container newgame-container">
-          <div class="row">
-            <div class="col-md-auto">
-              <div class="input-group mb-3">
-                <label
-                  class="input-group-text dropdown-label"
-                  for="inputWordLength"
-                  >WORD LENGTH</label
-                >
-                <select
-                  class="form-select"
-                  id="inputWordLength"
-                  [(ngModel)]="selectedWordLength"
-                >
-                  <option value="4">4</option>
-                  <option value="5">5</option>
-                  <option value="6">6</option>
-                  <option value="7">7</option>
-                </select>
+        <div class="newgame-container collapse" id="collapseNewGame">
+          <div class="row justify-content-center">
+            <div class="col-auto new-game-border">
+              <div class="row justify-content-center">
+                <div class="col-auto">
+                  <div class="input-group mb-3">
+                    <label
+                      class="input-group-text dropdown-label"
+                      for="inputWordLength"
+                      >WORD LENGTH</label
+                    >
+                    <select
+                      class="form-select"
+                      id="inputWordLength"
+                      [disabled]="isLoading"
+                      [(ngModel)]="selectedWordLength"
+                    >
+                      <option value="4">4</option>
+                      <option value="5">5</option>
+                      <option value="6">6</option>
+                      <option value="7">7</option>
+                    </select>
+                  </div>
+                </div>
               </div>
-            </div>
-            <div class="row">
-              <div class="col-md-auto">
-                <div class="input-group mb-3">
-                  <label
-                    class="input-group-text dropdown-label"
-                    for="inputMaxTurns"
-                    >MAX TURNS</label
+              <div class="row justify-content-center">
+                <div class="col-auto">
+                  <div class="input-group mb-3">
+                    <label
+                      class="input-group-text dropdown-label"
+                      for="inputMaxTurns"
+                      >MAX TURNS</label
+                    >
+                    <select
+                      class="form-select"
+                      id="inputMaxTurns"
+                      [disabled]="isLoading"
+                      [(ngModel)]="selectedMaxTurns"
+                    >
+                      <option value="4">4</option>
+                      <option value="5">5</option>
+                      <option value="6">6</option>
+                      <option value="7">7</option>
+                      <option value="8">8</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+              <div class="row justify-content-center">
+                <div class="col-auto">
+                  <button
+                    type="button"
+                    class="btn btn-success"
+                    [disabled]="isLoading"
+                    (click)="onNewGameStartModal()"
                   >
-                  <select
-                    class="form-select"
-                    id="inputMaxTurns"
-                    [(ngModel)]="selectedMaxTurns"
-                  >
-                    <option value="4">4</option>
-                    <option value="5">5</option>
-                    <option value="6">6</option>
-                    <option value="7">7</option>
-                    <option value="8">8</option>
-                  </select>
+                    @if (isLoading) {
+                    <span
+                      class="spinner-border spinner-border-sm"
+                      role="status"
+                      aria-hidden="true"
+                    ></span>
+                    Loading... } @else { START }
+                  </button>
                 </div>
               </div>
             </div>
           </div>
-          <div class="row">
-            <div class="col-md-auto">
-              <button
-                type="button"
-                class="btn btn-primary mb-2"
-                (click)="onNewGameStartModal()"
-              >
-                Start
-              </button>
-            </div>
-          </div>
         </div>
-        }
         <!-- <div class="modal-footer">
           <button
             type="button"

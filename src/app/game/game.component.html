@@ -1,32 +1,46 @@
 @if (isModalOpen | async) {
 <div>
-  <app-modal
-    (newGameStartModal)="onNewGameStartModal()"
-    (resumeModal)="onCloseModal()"
-  ></app-modal>
+  <app-modal></app-modal>
+</div>
+} @if ((isGameOverModalOpen | async)){
+<div>
+  <app-gameover-modal></app-gameover-modal>
 </div>
 }
 <div>
-  <div class="row justify-content-center main-container no-gutters">
-    <div class="col-md-auto">
-      @for (item of [].constructor((gameConfig | async)!.maxTurns); track
-      $index; let turnIndex = $index) {
-      <div
-        class="row row-container justify-content-center no-gutters flex-nowrap"
-      >
-        @for (item of [].constructor((gameConfig | async)!.wordLength); track
-        $index; let letterIndex = $index) {
-        <div class="col-auto cell-container">
-          <app-letter-container
-            [turnIndex]="turnIndex"
-            [letterIndex]="letterIndex"
-            [TurnValue]="gameStateValues[turnIndex]"
-          ></app-letter-container>
+  <div>
+    <div class="row justify-content-center main-container no-gutters">
+      <div class="col-md-auto">
+        @for (item of [].constructor((gameConfig | async)!.maxTurns); track
+        $index; let turnIndex = $index) {
+        <div
+          class="row row-container justify-content-center no-gutters flex-nowrap"
+        >
+          @for (item of [].constructor((gameConfig | async)!.wordLength); track
+          $index; let letterIndex = $index) {
+          <div class="col-auto cell-container">
+            <app-letter-container
+              [turnIndex]="turnIndex"
+              [letterIndex]="letterIndex"
+            ></app-letter-container>
+          </div>
+          }
         </div>
         }
       </div>
-      }
     </div>
+    @if ((isGameOver | async)!.isGameOver && !(isGameOverModalOpen | async)) {
+    <div style="text-align: center">
+      <p>
+        You
+        {{ (this.isGameOver | async)!.isWin ? "guessed" : "failed to guess" }}
+        the word {{ answer | async }}. Check its meaning
+        <a [href]="answerLink" target="_blank">here</a>.
+      </p>
+    </div>
+    }
   </div>
-  <app-keyboard></app-keyboard>
+  <div class="keyboard-container">
+    <app-keyboard></app-keyboard>
+  </div>
 </div>

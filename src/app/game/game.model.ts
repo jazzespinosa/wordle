@@ -11,14 +11,16 @@ export interface GameConfig {
 }
 
 export interface CellModel {
-  // turnIndex: number;
-  // letterIndex: number;
   value: string;
   state: LetterState;
 }
 
 export interface TurnModel {
   turnValue: string; // word of turn / row
-  // turnIndex: number;
   cellValue: CellModel[];
+}
+
+export interface GameOverModel {
+  isGameOver: boolean;
+  isWin: boolean;
 }

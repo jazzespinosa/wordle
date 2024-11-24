@@ -7,3 +7,11 @@
 .navbar-toggler {
   box-shadow: none;
 }
+
+a.navbar-brand {
+  font-size: 2rem;
+}
+
+.sm-heading {
+  font-size: 1rem;
+}

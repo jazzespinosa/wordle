@@ -1,16 +1,26 @@
-<ul>
-  <li>
-    <a routerLink="/play" (click)="onPlayClicked()">PLAY</a>
-  </li>
-  <!-- <li>
-    <a
-      routerLink="/play"
-      [queryParams]="{ newgame: 'true' }"
-      (click)="onSideNavClick()"
-      >NEW GAME</a
-    >
-  </li> -->
-  <li><a>STATS</a></li>
-  <li><a>HOW TO PLAY</a></li>
-  <li><a>ABOUT</a></li>
-</ul>
+<link
+  rel="stylesheet"
+  href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0"
+/>
+<div class="list-group">
+  <a
+    class="list-group-item list-group-item-action"
+    routerLink="/play"
+    (click)="onPlayClicked()"
+  >
+    <span class="material-symbols-rounded">sports_esports</span>
+    PLAY
+  </a>
+  <a href="#" class="list-group-item list-group-item-action">
+    <span class="material-symbols-rounded">leaderboard</span> STATS
+  </a>
+  <a href="#" class="list-group-item list-group-item-action"
+    ><span class="material-symbols-rounded"> help </span> HOW TO PLAY
+  </a>
+  <a
+    class="list-group-item list-group-item-action"
+    routerLink="/about"
+    (click)="onAboutClicked()"
+    ><span class="material-symbols-rounded"> account_box </span> ABOUT
+  </a>
+</div>

@@ -18,7 +18,6 @@ import { HomeComponent } from './home/home.component';
     CommonModule,
     SideNavComponent,
     MatSidenavModule,
-    HomeComponent,
   ],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css',

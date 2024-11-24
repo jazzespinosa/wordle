@@ -1,0 +1,23 @@
+<div class="modal-backdrop"></div>
+<div class="modal fade show" tabindex="-1" role="dialog" style="display: block">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header justify-content-center">
+        <h5 class="modal-title">GAME OVER</h5>
+      </div>
+      <div class="modal-body">
+        <h3>{{ (this.isWin | async) ? "YOU WIN!" : "YOU FAILED!" }}</h3>
+        <p>
+          You {{ (this.isWin | async) ? "guessed" : "failed to guess" }} the
+          word {{ answer | async }}. Check its meaning
+          <a [href]="answerLink" target="_blank">here</a>.
+        </p>
+      </div>
+      <div class="modal-footer justify-content-center">
+        <button type="button" class="btn btn-primary" (click)="onOKClick()">
+          OK
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
