@@ -9,7 +9,8 @@ import {
 } from '@angular/core';
 import Keyboard from 'simple-keyboard';
 import { GameService } from '../game.service';
-import { map, Observable, Subscription } from 'rxjs';
+import { map, Observable, Subscription, take, tap } from 'rxjs';
+import { CellModel, LetterState } from '../game.model';
 
 @Component({
   selector: 'app-keyboard',
@@ -61,10 +62,11 @@ export class KeyboardComponent implements OnInit, OnDestroy {
     );
 
     this.subsAnswer = this.gameService.answer$.subscribe((value) => {
-      if (value !== this.answer) {
+      if (value !== this.answer && this.answer !== '') {
         this.keyboard.destroy();
         this.initKeyboard();
       }
+      this.answer = value;
     });
 
     this.subsIsGameOver = this.gameService.isGameOver$.subscribe((value) => {
@@ -81,6 +83,24 @@ export class KeyboardComponent implements OnInit, OnDestroy {
     this.subsKeyboardState.unsubscribe();
     this.subsAnswer.unsubscribe();
     this.subsIsGameOver.unsubscribe();
+
+    let tempKeyboardStates: CellModel[] = [];
+    const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+    letters.forEach((item) => {
+      const keyTheme = this.keyboard.getButtonThemeClasses(item);
+      if (keyTheme.length > 0) {
+        tempKeyboardStates.push({
+          value: item,
+          state: <LetterState>keyTheme[0],
+        });
+      } else {
+        tempKeyboardStates.push({
+          value: item,
+          state: LetterState.default,
+        });
+      }
+    });
+    this.gameService.setKeyboardStates(tempKeyboardStates);
   }
 
   initKeyboard() {
@@ -98,6 +118,13 @@ export class KeyboardComponent implements OnInit, OnDestroy {
         '{enter}': 'ENTER',
       },
     });
+
+    let currentKeyboardStates = this.gameService.getKeyboardStates();
+    if (currentKeyboardStates.length > 0) {
+      currentKeyboardStates.forEach((item) => {
+        this.updateKeyboardButtonTheme(item.value, item.state);
+      });
+    }
   }
 
   onKeyPress(key: string) {
@@ -133,7 +160,6 @@ export class KeyboardComponent implements OnInit, OnDestroy {
     if (this.keyboard.getButtonThemeClasses(key).length > 0) {
       keyboardClasses = this.keyboard.getButtonThemeClasses(key);
     }
-
     if (
       state === 'correct' ||
       (state === 'present' && !keyboardClasses.includes('correct')) ||

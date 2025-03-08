@@ -24,7 +24,7 @@ import { GameoverModalComponent } from './gameover-modal/gameover-modal.componen
   templateUrl: './game.component.html',
   styleUrl: './game.component.css',
 })
-export class GameComponent implements OnInit {
+export class GameComponent implements OnInit, OnDestroy {
   isModalOpen!: Observable<boolean>;
   gameConfig!: Observable<GameConfig>;
   isGameOverModalOpen!: Observable<boolean>;
@@ -45,5 +45,9 @@ export class GameComponent implements OnInit {
           'https://www.google.com/search?q=' + value.toLowerCase();
       })
     );
+  }
+
+  ngOnDestroy(): void {
+    this.gameService.clearTempTurn();
   }
 }

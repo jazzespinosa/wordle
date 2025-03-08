@@ -16,12 +16,14 @@ export class GameService {
   private readonly INITIAL_MAX_TURNS = 6;
 
   private environment = new Environment();
-  private host = this.environment.getApiHost();
-  private url = this.environment.getApiUrl();
   private key = this.environment.getApiKey();
-  private ua = this.environment.getApiUa();
+  private url = this.environment.getApiUrl();
 
-  private answer = new BehaviorSubject<string>('QWERT');
+  // only for rapidapi word generator API
+  // private host = this.environment.getApiHost();
+  // private ua = this.environment.getApiUa();
+
+  private answer = new BehaviorSubject<string>('WORDS');
   answer$ = this.answer.asObservable();
 
   private isGameModalOpen = new BehaviorSubject<boolean>(false);
@@ -29,6 +31,9 @@ export class GameService {
 
   private isGameOverModalOpen = new BehaviorSubject<boolean>(false);
   isGameOverModalOpen$ = this.isGameOverModalOpen.asObservable();
+
+  private keyboardStates = new BehaviorSubject<CellModel[]>([]);
+  keyboardStates$ = this.keyboardStates.asObservable();
 
   private keyboardState = new BehaviorSubject<CellModel>({
     value: '',
@@ -70,41 +75,33 @@ export class GameService {
     if (this.checkIfValid()) {
       let cellValues: CellModel[] = [];
       let isWinner = true;
+
       const answer = this.answer.getValue();
 
       for (let i = 0; i < enteredValue.length; i++) {
         // check state of letter
         let state = LetterState.default;
-        let found = false;
+        let isPresent = false;
 
         for (let j = 0; j < answer.length; j++) {
           if (enteredValue[i] === answer[j] && i === j) {
             state = LetterState.correct;
-            this.keyboardState.next({
-              value: enteredValue[i],
-              state: LetterState.correct,
-            });
             break;
           } else if (enteredValue[i] === answer[j]) {
-            state = LetterState.present;
-            this.keyboardState.next({
-              value: enteredValue[i],
-              state: LetterState.present,
-            });
-            found = true;
-          } else {
-            state = LetterState.incorrect;
-            this.keyboardState.next({
-              value: enteredValue[i],
-              state: LetterState.incorrect,
-            });
+            isPresent = true;
           }
 
-          if (found) {
+          if (isPresent) {
             state = LetterState.present;
+          } else {
+            state = LetterState.incorrect;
           }
         }
 
+        this.keyboardState.next({
+          value: enteredValue[i],
+          state: state,
+        });
         cellValues.push({
           state: state,
           value: enteredValue[i],
@@ -119,7 +116,7 @@ export class GameService {
         },
       ]);
 
-      this.tempTurnValue.next('');
+      this.clearTempTurn();
 
       for (const cellValue of cellValues) {
         if (cellValue.state !== LetterState.correct) {
@@ -143,31 +140,54 @@ export class GameService {
         return;
       }
 
-      console.log(this.gameStateValues);
+      // console.log(this.gameStateValues);
+      // console.log('keyboardstate', this.keyboardState.getValue());
     }
   }
 
+  // updateKeyboardStates(letterStateToUpdate: string, state: LetterState) {
+  //   let tempKeyboardStates = this.keyboardState.getValue(); // get current keyboard states
+  //   let index = tempKeyboardStates.findIndex(
+  //     (item) => item.value === letterStateToUpdate
+  //   ); // find index of letter to update
+  //   tempKeyboardStates[index].state = state; // update state of letter
+  //   this.keyboardState.next(tempKeyboardStates); // push updates to keyboard states
+  // }
+
   onNewGameStart() {
     this.gameStateValues.next([]);
-    this.tempTurnValue.next('');
+    this.clearTempTurn();
     this.isGameOver.next({ isGameOver: false, isWin: false });
     // this.generateRandomWord();
   }
 
   generateRandomWord() {
-    const headers = new HttpHeaders()
-      .set('x-rapidapi-host', this.host)
-      .set('x-rapidapi-key', this.key)
-      .set('x-rapidapi-ua', this.ua);
+    // only for rapidapi word generator API
+    // const headers = new HttpHeaders()
+    // .set('x-rapidapi-key', this.key);
+    // .set('x-rapidapi-host', this.host)
+    // .set('x-rapidapi-ua', this.ua);
+    // const params = new HttpParams().set(
+    //   'length',
+    //   this.gameConfig.value.wordLength
+    // );
 
-    const params = new HttpParams().set(
-      'length',
-      this.gameConfig.value.wordLength
-    );
+    // wordnik API
+    const headers = new HttpHeaders().set('api_key', this.key);
+
+    const params = new HttpParams()
+      .set('hasDictionaryDef', true)
+      .set('minLength', this.gameConfig.value.wordLength)
+      .set('maxLength', this.gameConfig.value.wordLength)
+      .set('minCorpusCount', 100);
 
     const options = { params: params, headers: headers };
 
-    return this.http.get<any>(this.url, options);
+    let x = this.gameConfig.value.wordLength;
+    const completeURL = `${this.url}?hasDictionaryDef=true&minLength=${x}&maxLength=${x}&minCorpusCount=5&minDictionaryCount=1&api_key=${this.key}`;
+
+    return this.http.get<any>(completeURL);
+    // return this.http.get<any>(this.url, options);
     // .pipe(
     //   map((response) => {
     //     console.log('responseMap', response);
@@ -180,6 +200,14 @@ export class GameService {
     //   // console.log('value', response['body'][0]);
     //   this.answer.next(<string>response['body'][0].toUpperCase());
     // })
+  }
+
+  getKeyboardStates() {
+    return this.keyboardStates.getValue();
+  }
+
+  setKeyboardStates(values: CellModel[]) {
+    this.keyboardStates.next(values);
   }
 
   setNewGameAnswer(value: string) {
@@ -196,6 +224,10 @@ export class GameService {
 
   setGameConfig(value: GameConfig) {
     this.gameConfig.next(value);
+  }
+
+  clearTempTurn() {
+    this.tempTurnValue.next('');
   }
 
   // replace wih valid word checker

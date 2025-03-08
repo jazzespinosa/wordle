@@ -88,3 +88,18 @@
   background-color: rgb(180, 253, 213);
   border: 1px solid #4b4b4f;
 }
+
+.alert.alert-danger {
+  --bs-alert-padding-x: 0.5rem;
+  --bs-alert-padding-y: 0.5rem;
+}
+
+.material-symbols-rounded {
+  font-variation-settings:
+    'FILL' 0,
+    'wght' 400,
+    'GRAD' 0,
+    'opsz' 24;
+
+  vertical-align: text-bottom;
+}
