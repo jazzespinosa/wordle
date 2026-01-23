@@ -133,3 +133,8 @@ a {
 .slider.move {
   transform: translateX(-50%);
 }
+
+.google-icon {
+  width: 1.5rem;
+  height: 1.5rem;
+}

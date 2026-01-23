@@ -24,6 +24,7 @@ import {
   catchError,
   throwError,
   tap,
+  firstValueFrom,
 } from 'rxjs';
 import {
   LoginError,
@@ -33,16 +34,19 @@ import {
 } from './auth.model';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { isPlatformBrowser } from '@angular/common';
+import { Router } from '@angular/router';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private platformId = inject(PLATFORM_ID);
 
   private readonly baseUrl = environment.backendUrl;
+  private googleProvider = new GoogleAuthProvider();
 
   constructor(
     private auth: Auth,
     private http: HttpClient,
+    private router: Router,
     private destroyRef: DestroyRef,
   ) {}
 
@@ -63,19 +67,49 @@ export class AuthService {
     this.user.next(user);
   }
 
-  initializeAuth(): Promise<void> {
+  async initializeAuth(): Promise<void> {
     // Don't run on server
     if (!isPlatformBrowser(this.platformId)) {
       return Promise.resolve();
+    }
+
+    try {
+      console.log('[Auth] Checking for redirect result...');
+      const redirectResult = await getRedirectResult(this.auth);
+
+      if (redirectResult && redirectResult.user) {
+        console.log('[Auth] Redirect result found:', redirectResult.user.email);
+        // Validate with backend for Google sign-in
+        const userData = await firstValueFrom(
+          this.validateWithBackendGoogle(redirectResult),
+        );
+        if (userData && userData.email) {
+          this.setUser(userData);
+          this.router.navigate(['/home']);
+          return; // Exit early - we've handled the auth
+        }
+      }
+    } catch (error: any) {
+      // Handle specific redirect errors
+      if (error.code === 'auth/popup-closed-by-user') {
+        console.log('[Auth] Popup was closed by user');
+      } else if (error.code === 'auth/cancelled-popup-request') {
+        console.log('[Auth] Popup request was cancelled');
+      } else if (error.code === 'auth/redirect-cancelled-by-user') {
+        console.log('[Auth] Redirect was cancelled by user');
+      } else {
+        console.error('[Auth] Redirect result error:', error);
+      }
     }
 
     return new Promise<void>((resolve) => {
       const unsubscribe = onAuthStateChanged(
         this.auth,
         (user) => {
+          console.log('[Auth] Auth state changed:', user?.email || 'null');
           if (user) {
-            let email = user.email || '';
-            let name =
+            const email = user.email || '';
+            const name =
               user.displayName ||
               user.email?.substring(0, user.email.indexOf('@')) ||
               '';
@@ -85,13 +119,12 @@ export class AuthService {
               isAnonymous: user.isAnonymous,
             };
             this.setUser(userData);
-            this.handleAuth(userData, user.isAnonymous);
           }
           unsubscribe(); // Unsubscribe after first result
           resolve();
         },
         (error) => {
-          console.error('Auth state error:', error);
+          console.error('[Auth] Auth state error:', error);
           resolve(); // Resolve anyway to prevent hanging
         },
       );
@@ -111,7 +144,7 @@ export class AuthService {
       switchMap((userCredential) => this.validateWithBackend(userCredential)),
       catchError((error) => throwError(() => this.mapLoginError(error))),
       tap((userData) => {
-        this.handleAuth(userData, false);
+        this.setUser(userData);
       }),
     );
   }
@@ -185,7 +218,7 @@ export class AuthService {
       ),
       catchError((error) => throwError(() => this.mapSignUpError(error))),
       tap((userData) => {
-        this.handleAuth(userData, false);
+        this.setUser(userData);
       }),
     );
   }
@@ -228,44 +261,11 @@ export class AuthService {
 
   loginWithGoogle() {
     return this.signOutIfNeeded().pipe(
-      switchMap(() =>
-        from(
-          signInWithRedirect(
-            this.auth,
-            new GoogleAuthProvider(),
-            // browserPopupRedirectResolver,
-          ),
-        ),
-      ),
-    );
-  }
-
-  checkGoogleLogin(): Observable<UserModel | null> {
-    return from(getRedirectResult(this.auth)).pipe(
-      switchMap((result) => {
-        if (result) {
-          return this.validateWithBackendGoogle(result);
-        }
-        // Fallback: Check if user is already signed in via persistence
-        const currentUser = this.auth.currentUser;
-        if (currentUser) {
-          return this.validateWithBackendGoogle({
-            user: currentUser,
-          } as UserCredential);
-        }
-        return of(null);
-      }),
-      tap((userData) => {
-        if (userData) {
-          this.handleAuth(userData, false);
-        }
-      }),
-      catchError((error) => throwError(() => this.mapLoginError(error))),
+      switchMap(() => from(signInWithRedirect(this.auth, this.googleProvider))),
     );
   }
 
   private validateWithBackendGoogle(
-    // oAuthCredential: OAuthCredential | null,
     userCredential: UserCredential | null,
   ): Observable<UserModel> {
     if (!userCredential) {
@@ -310,7 +310,7 @@ export class AuthService {
         }),
       ),
       tap((userData) => {
-        this.handleAuth(userData, true);
+        this.setUser(userData);
       }),
     );
   }
@@ -343,49 +343,10 @@ export class AuthService {
     return this.http.get<any>(`${this.baseUrl}/api/util/online`);
   }
 
-  // autoLogout(expirationDuration: number) {
-  //   this.tokenExpiration = setTimeout(() => {
-  //     this.logout();
-  //   }, expirationDuration);
-  // }
-
   logout() {
     this.signOutIfNeeded()
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe();
     this.setUser(null);
-    // if (this.tokenExpiration) {
-    //   clearTimeout(this.tokenExpiration);
-    // }
-  }
-
-  private handleAuth(user: UserModel, isAnonymous: boolean) {
-    this.setUser(user);
-
-    if (isAnonymous) {
-      // clearTimeout(this.tokenExpiration);
-    } else {
-      var dateNow = new Date();
-      this.getExpirationTime()
-        .pipe(
-          map((result) => {
-            let expiryDate = new Date(result);
-            let timeLeft = expiryDate.getTime() - dateNow.getTime();
-            // this.autoLogout(timeLeft);
-          }),
-        )
-        .subscribe();
-    }
-  }
-
-  private getExpirationTime(): Observable<string> {
-    var getIdTokenResult = this.auth.currentUser?.getIdTokenResult();
-
-    if (getIdTokenResult) {
-      return from(getIdTokenResult).pipe(
-        map((result) => result.expirationTime),
-      );
-    }
-    return of('');
   }
 }

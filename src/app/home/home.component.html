@@ -19,73 +19,81 @@
   </header>
 
   <!-- Stats Section -->
-  <section class="stats-section">
-    <div class="stats-header">
-      <button class="toggle-btn" (click)="toggleStats()">
-        @if (showStats) {
-          <i class="bi bi-eye"></i>
-        } @else {
-          <i class="bi bi-eye-slash"></i>
-        }
-        <i class="bi bi-bar-chart-line"></i>
-      </button>
-    </div>
-    @if (showStats) {
-      <div class="stats-grid">
-        <div class="stat-card">
-          <div class="stat-value">{{ gamesPlayed }}</div>
-          <div class="stat-label">Games Played</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-value">{{ winPercentage | number: "1.0-2" }}%</div>
-          <div class="stat-label">Win Rate</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-value">{{ currentStreak }}</div>
-          <div class="stat-label">Current Streak</div>
-        </div>
+  @if ((user | async)?.name) {
+    <section class="stats-section">
+      <div class="stats-header">
+        <button class="toggle-btn" (click)="toggleStats()">
+          @if (showStats) {
+            <i class="bi bi-eye"></i>
+          } @else {
+            <i class="bi bi-eye-slash"></i>
+          }
+          <i class="bi bi-bar-chart-line"></i>
+        </button>
       </div>
-    }
-  </section>
+      @if (showStats) {
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-value">{{ gamesPlayed }}</div>
+            <div class="stat-label">Games Played</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value">{{ winPercentage | number: "1.0-2" }}%</div>
+            <div class="stat-label">Win Rate</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value">{{ currentStreak }}</div>
+            <div class="stat-label">Current Streak</div>
+          </div>
+        </div>
+      }
+    </section>
+  }
 
   <!-- Action Section -->
   <div class="action-area">
     <button class="play-btn" (click)="navigateToGame()">
-      {{ hasExistingGame ? "Jump back in?" : "Start New Game" }}
+      @if ((user | async)?.name) {
+        {{ hasExistingGame ? "Jump back in?" : "Start New Game" }}
+      } @else {
+        Let's Play!
+      }
     </button>
   </div>
 
   <!-- History Section -->
-  <section class="history-section">
-    <div class="history-header">
-      <h2>Recent Games</h2>
-      <a class="view-all-link" routerLink="/stats">View All</a>
-    </div>
-    <div class="table-container">
-      <table class="history-table">
-        <thead>
-          <tr>
-            <th>Date</th>
-            <th>Word</th>
-            <th>Result</th>
-            <th>Turns</th>
-          </tr>
-        </thead>
-        <tbody>
-          @for (game of homeHistory; track $index) {
+  @if ((user | async)?.name) {
+    <section class="history-section">
+      <div class="history-header">
+        <h2>Recent Games</h2>
+        <a class="view-all-link" routerLink="/stats">View All</a>
+      </div>
+      <div class="table-container">
+        <table class="history-table">
+          <thead>
             <tr>
-              <td>{{ game.date | date: "M/d/y h:mm a" }}</td>
-              <td class="word-cell">{{ game.word }}</td>
-              <td>
-                <span class="badge" [ngClass]="game.result">
-                  {{ game.result }}
-                </span>
-              </td>
-              <td>{{ game.turnsSolved }}</td>
+              <th>Date</th>
+              <th>Word</th>
+              <th>Result</th>
+              <th>Turns</th>
             </tr>
-          }
-        </tbody>
-      </table>
-    </div>
-  </section>
+          </thead>
+          <tbody>
+            @for (game of homeHistory; track $index) {
+              <tr>
+                <td>{{ game.date | date: "M/d/y h:mm a" }}</td>
+                <td class="word-cell">{{ game.word }}</td>
+                <td>
+                  <span class="badge" [ngClass]="game.result">
+                    {{ game.result }}
+                  </span>
+                </td>
+                <td>{{ game.turnsSolved }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </section>
+  }
 </div>

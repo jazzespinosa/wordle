@@ -170,6 +170,8 @@ export class KeyboardComponent implements OnInit, OnDestroy {
           },
           error: (err) => {
             if (
+              err.message ===
+                'Guess word length does not match the game word length.' ||
               err.error.message.startsWith('Invalid guess word') ||
               err.error.message ===
                 'Guess word length does not match the game word length.'

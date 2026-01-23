@@ -135,33 +135,30 @@ export class GameService {
 
   onEnterValue(enteredValue: string): Observable<GuessPostResponseDto> {
     this.setIsGuessLoading(true);
+
+    if (enteredValue.length !== this.globalGameStatus.value.wordLength) {
+      this.setIsGuessValid(false);
+      this.setIsGuessLoading(false);
+      return throwError(
+        () =>
+          new Error('Guess word length does not match the game word length.'),
+      );
+    }
+
     return this.http
-      .get<GetCurrentGameDto>(`${this.baseUrl}/api/Game/get-game`) //REDUCE API CALL. LET BACKEND HANDLE VALIDATION OF GAMEID
+      .post<GuessPostResponseDto>(`${this.baseUrl}/api/Game/guess`, {
+        GameId: this.globalGameStatus.value.gameId,
+        Guess: enteredValue,
+      })
       .pipe(
         map((response) => ({
           gameId: response.gameId,
-          currentTurn: response.turnsPlayed,
-          guessLength: response.guessLength,
-          maxTurns: response.maxTurns,
-          guesses: response.guesses,
+          guess: response.guess,
+          turn: response.turn,
+          isGuessCorrect: response.isGuessCorrect,
+          answer: response.answer,
+          letterStates: response.letterStates,
         })),
-        concatMap((game) =>
-          this.http
-            .post<GuessPostResponseDto>(`${this.baseUrl}/api/Game/guess`, {
-              GameId: game.gameId,
-              Guess: enteredValue,
-            })
-            .pipe(
-              map((response) => ({
-                gameId: response.gameId,
-                guess: response.guess,
-                turn: response.turn,
-                isGuessCorrect: response.isGuessCorrect,
-                answer: response.answer,
-                letterStates: response.letterStates,
-              })),
-            ),
-        ),
         tap((postResponse) => {
           this.processGuess(postResponse, enteredValue);
           this.setGuessResponse(postResponse);

@@ -6,7 +6,7 @@ import { AuthService } from '../auth/auth.service';
 import { map, Observable, tap } from 'rxjs';
 import { UserModel } from '../auth/auth.model';
 import { GameService } from '../game/game.service';
-import { GameState, GameHistoryModel } from '../game/game.model';
+import { GameHistoryModel } from '../game/game.model';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 export interface GameHistory {

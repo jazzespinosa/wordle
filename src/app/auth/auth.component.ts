@@ -54,21 +54,6 @@ export class AuthComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.authService
-      .checkGoogleLogin()
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe({
-        next: (value) => {
-          if (value) {
-            this.router.navigate(['/home']);
-            this.loginButtonErrorMessage = null;
-          }
-        },
-        error: (err: any) => {
-          this.loginButtonErrorMessage = err.message;
-        },
-      });
-
     this.isLoading = this.authService.isLoading$;
 
     this.loginForm = this.formBuilder.group({
@@ -202,9 +187,6 @@ export class AuthComponent implements OnInit {
 
   onLoginWithGoogle() {
     this.authService.setIsLoading(true);
-    // this.isLoginSubmit = false;
-    // this.isSignUpSubmit = false;
-    // this.loginButtonErrorMessage = null;
 
     this.authService
       .loginWithGoogle()
@@ -214,17 +196,11 @@ export class AuthComponent implements OnInit {
           this.loginButtonErrorMessage = err.message;
           this.authService.setIsLoading(false);
         },
-        complete: () => {
-          // This might not strictly complete before the redirect happens, but good practice
-          // Actually, redirect might happen before this or interrupt it.
-        },
       });
   }
 
   onLoginAsGuest() {
     this.authService.setIsLoading(true);
-    // this.isLoginSubmit = false;
-    // this.isSignUpSubmit = false;
     this.loginButtonErrorMessage = null;
 
     this.authService
