@@ -11,10 +11,8 @@ import {
   signInWithRedirect,
   getRedirectResult,
   GoogleAuthProvider,
-  connectAuthEmulator,
   signInAnonymously,
 } from '@angular/fire/auth';
-import { browserPopupRedirectResolver } from 'firebase/auth';
 import { environment } from '../../../environments/environment';
 import {
   BehaviorSubject,
@@ -228,7 +226,7 @@ export class AuthService {
     };
   }
 
-  loginWithGoogle(): Observable<void> {
+  loginWithGoogle() {
     return this.signOutIfNeeded().pipe(
       switchMap(() =>
         from(

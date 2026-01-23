@@ -6,8 +6,8 @@ import {
   provideZoneChangeDetection,
 } from '@angular/core';
 import { provideRouter } from '@angular/router';
-import { provideFirebaseApp } from '@angular/fire/app';
-import { provideAuth } from '@angular/fire/auth';
+import { initializeApp, provideFirebaseApp } from '@angular/fire/app';
+import { getAuth, provideAuth } from '@angular/fire/auth';
 import { routes } from './app.routes';
 import { provideClientHydration } from '@angular/platform-browser';
 import { provideAnimations } from '@angular/platform-browser/animations';
@@ -21,7 +21,7 @@ import { AuthInterceptorService } from './auth/auth-interceptor.service';
 import { AuthService } from './auth/auth.service';
 import { isPlatformBrowser } from '@angular/common';
 import { provideCharts, withDefaultRegisterables } from 'ng2-charts';
-import { app, auth } from '../../environments/firebase.config';
+import { environment } from '../../environments/environment';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -40,8 +40,8 @@ export const appConfig: ApplicationConfig = {
     provideRouter(routes),
     provideClientHydration(),
     provideAnimations(),
-    provideFirebaseApp(() => app),
-    provideAuth(() => auth),
+    provideFirebaseApp(() => initializeApp(environment.firebaseConfig)),
+    provideAuth(() => getAuth()),
   ],
 };
 
